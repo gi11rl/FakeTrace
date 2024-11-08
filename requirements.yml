@@ -80,4 +80,4 @@ dependencies:
       - werkzeug==2.2.3
       - yarg==0.1.9
       - zipp==3.15.0
-prefix: /home/likaide/anaconda3/envs/WhatMark_wxs
+prefix: /home/user/anaconda3/envs/FakeTrace

@@ -75,6 +75,7 @@ def main():
     EC_path = result_folder + "models/EC_" + str(model_epoch) + ".pth"
     network.load_model_ed(EC_path)
 
+    # 데이터셋 만들기 (이미지 라벨링)
     if noise_layer[0:len("StarGAN")] != "StarGAN":
         test_dataset = maskImgDataset(os.path.join(dataset_path, "test_256"), image_size)
     else:
@@ -95,6 +96,7 @@ def main():
     saved_iterations = np.random.choice(np.arange(1, len(test_dataloader)+1), size=save_images_number, replace=False)
     saved_all = None
 
+    # 데이터셋에서 이미지랑 마스크 하나씩 가져오기
     for step, (image, mask) in enumerate(test_dataloader, 1):
         image = image.to(device)
         message = torch.Tensor(np.random.choice([-message_range, message_range], (image.shape[0], message_length))).to(device)
