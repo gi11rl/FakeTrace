@@ -14,7 +14,7 @@ weight:
   - 10 # decoder_R
   - 10 # decoder_F
   - 0.1 # discriminator
-dataset_path: /home/likaide/sda4/wxs/Dataset/dual_watermark/
+dataset_path: /mnt/c/Users/bob13/fake/dataset/
 save_images_number: 8
 noise_layers:
   pool_R:

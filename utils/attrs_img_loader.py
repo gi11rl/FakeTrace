@@ -10,8 +10,16 @@ class attrsImgDataset(Dataset):
         super(attrsImgDataset, self).__init__()
         self.image_size = image_size
         self.image_dir = path
+        
+        # 디버깅
+        '''
+        print("Image directory:", self.image_dir)
+        print("Files in directory:", os.listdir(self.image_dir))
+        '''
+        
         if attr_path[0:len("celebahq")] != "celebahq":
             self.attr_path = 'network/noise_layers/stargan/list_attr_celeba.txt'
+        # Dual_Mark_main.py 의 train_dataset이 아래 경로를 따름
         else:
             self.attr_path = 'network/noise_layers/stargan/CelebAMask-HQ-attribute-anno.txt'
 

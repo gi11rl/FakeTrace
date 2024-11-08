@@ -81,6 +81,10 @@ def main():
     else:
         test_dataset = attrsImgDataset(os.path.join(dataset_path, "test_256"), image_size, "celebahq")
 
+    ### 디버깅
+    #print("Total test images:", len(test_dataset))
+
+
     test_dataloader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=0, pin_memory=True)
 
     print("\nStart Testing : \n\n")
