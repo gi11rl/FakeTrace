@@ -6,8 +6,8 @@ import lpips
 
 
 class Network:
-
-	def __init__(self, message_length, noise_layers_R, noise_layers_F, device, batch_size, lr, beta1, attention_encoder, attention_decoder, weight):
+	#def __init__(self, message_length, noise_layers_R, noise_layers_F, device, batch_size, lr, beta1, attention_encoder, attention_decoder, weight):
+	def __init__(self, message_length, noise_layers_G, noise_layers_A, device, batch_size, lr, beta1, attention_encoder, attention_decoder, weight):
 		# device
 		self.device = device
 
@@ -17,14 +17,18 @@ class Network:
 
 		# weight of encoder-decoder loss
 		self.encoder_weight = weight[0]
-		self.decoder_weight_C = weight[1]
-		self.decoder_weight_R = weight[2]
-		self.decoder_weight_F = weight[3]
-		self.discriminator_weight = weight[4]
+		#self.decoder_weight_C = weight[1]
+		#self.decoder_weight_R = weight[2]
+		#self.decoder_weight_F = weight[3]
+		self.decoder_weight_G = weight[1]
+		self.decoder_weight_A = weight[2]
+		#self.discriminator_weight = weight[4]
+		self.discriminator_weight = weight[3]
 
 		# network
-		self.encoder_decoder = DW_EncoderDecoder(message_length, noise_layers_R, noise_layers_F, attention_encoder, attention_decoder).to(device)
-		self.discriminator = Patch_Discriminator().to(device)
+		#self.encoder_decoder = DW_EncoderDecoder(message_length, noise_layers_R, noise_layers_F, attention_encoder, attention_decoder).to(device)
+		self.encoder_decoder = DW_EncoderDecoder(message_length, noise_layers_G, noise_layers_A, attention_encoder, attention_decoder).to(device)		
+  		self.discriminator = Patch_Discriminator().to(device)
 
 		self.encoder_decoder = torch.nn.DataParallel(self.encoder_decoder)
 		self.discriminator = torch.nn.DataParallel(self.discriminator)
@@ -49,7 +53,8 @@ class Network:
 		with torch.enable_grad():
 			# use device to compute
 			images, messages, masks = images.to(self.device), messages.to(self.device), masks.to(self.device)
-			encoded_images, noised_images, decoded_messages_C, decoded_messages_R, decoded_messages_F = self.encoder_decoder(images, messages, masks)
+			#encoded_images, noised_images, decoded_messages_C, decoded_messages_R, decoded_messages_F = self.encoder_decoder(images, messages, masks)
+			encoded_images, noised_images, decoded_messages_G, decoded_messages_A = self.encoder_decoder(images, messages, masks)
 
 			'''
 			train discriminator
@@ -95,10 +100,14 @@ class Network:
 			g_loss_on_encoder_LPIPS = torch.mean(self.criterion_LPIPS(encoded_images, images))
 
 			# RESULT : the decoded message should be similar to the raw message /Dual
-			g_loss_on_decoder_C = self.criterion_MSE(decoded_messages_C, messages)
-			g_loss_on_decoder_R = self.criterion_MSE(decoded_messages_R, messages)
-			g_loss_on_decoder_F = self.criterion_MSE(decoded_messages_F, torch.zeros_like(messages))
-
+			#g_loss_on_decoder_C = self.criterion_MSE(decoded_messages_C, messages)
+			#g_loss_on_decoder_R = self.criterion_MSE(decoded_messages_R, messages)
+			#g_loss_on_decoder_F = self.criterion_MSE(decoded_messages_F, torch.zeros_like(messages))
+			g_loss_on_decoder_G = self.criterion_MSE(decoded_messages_G, messages)
+			g_loss_on_decoder_A = self.criterion_MSE(decoded_messages_A, messages)
+   
+			######### -------- 2024 11 09 ---------- ###########
+   
 			# full loss
 			g_loss = self.discriminator_weight * g_loss_on_discriminator + self.encoder_weight * g_loss_on_encoder_MSE +\
 					 self.decoder_weight_C * g_loss_on_decoder_C + self.decoder_weight_R * g_loss_on_decoder_R + self.decoder_weight_F * g_loss_on_decoder_F
