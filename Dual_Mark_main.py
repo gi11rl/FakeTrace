@@ -77,17 +77,21 @@ def main():
 
         running_result = {
             "g_loss": 0.0,
-            "error_rate_C": 0.0,
-            "error_rate_R": 0.0,
-            "error_rate_F": 0.0,
+            #"error_rate_C": 0.0,
+            #"error_rate_R": 0.0,
+            #"error_rate_F": 0.0,
+            "error_rate_G": 0.0,
+            "error_rate_A": 0.0,
             "psnr": 0.0,
             "ssim": 0.0,
             "g_loss_on_discriminator": 0.0,
             "g_loss_on_encoder_MSE": 0.0,
             "g_loss_on_encoder_LPIPS": 0.0,
-            "g_loss_on_decoder_C": 0.0,
-            "g_loss_on_decoder_R": 0.0,
-            "g_loss_on_decoder_F": 0.0,
+            #"g_loss_on_decoder_C": 0.0,
+            #"g_loss_on_decoder_R": 0.0,
+            #"g_loss_on_decoder_F": 0.0,
+            "g_loss_on_decoder_G": 0.0,
+            "g_loss_on_decoder_A": 0.0,
             "d_loss": 0.0
         }
 
@@ -129,17 +133,21 @@ def main():
 
         val_result = {
             "g_loss": 0.0,
-            "error_rate_C": 0.0,
-            "error_rate_R": 0.0,
-            "error_rate_F": 0.0,
+            #"error_rate_C": 0.0,
+            #"error_rate_R": 0.0,
+            #"error_rate_F": 0.0,
+            "error_rate_G": 0.0,
+            "error_rate_A": 0.0,
             "psnr": 0.0,
             "ssim": 0.0,
             "g_loss_on_discriminator": 0.0,
             "g_loss_on_encoder_MSE": 0.0,
             "g_loss_on_encoder_LPIPS": 0.0,
-            "g_loss_on_decoder_C": 0.0,
-            "g_loss_on_decoder_R": 0.0,
-            "g_loss_on_decoder_F": 0.0,
+            #"g_loss_on_decoder_C": 0.0,
+            #"g_loss_on_decoder_R": 0.0,
+            #"g_loss_on_decoder_F": 0.0,
+            "g_loss_on_decoder_G": 0.0,
+            "g_loss_on_decoder_A": 0.0,
             "d_loss": 0.0
         }
 
