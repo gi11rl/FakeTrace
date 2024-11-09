@@ -45,8 +45,10 @@ def main():
     weight = args.weight
     dataset_path = args.dataset_path
     save_images_number = args.save_images_number
-    noise_layers_R = args.noise_layers.pool_R
-    noise_layers_F = args.noise_layers.pool_F
+    #noise_layers_R = args.noise_layers.pool_R
+    noise_layers_G = args.noise_layers.pool_G   # GAN noise layer
+    #noise_layers_F = args.noise_layers.pool_F
+    noise_layers_A = args.noise_layers.pool_A   # AE noise layer
 
     project_name += "_" + str(image_size) + "_" + str(message_length) + "_" + str(message_range) + "_" + str(lr) + "_" + str(beta1) + "_" + attention_encoder + "_" + attention_decoder
     for i in weight:
@@ -58,7 +60,8 @@ def main():
     copyfile("cfg/train_DualMark.yaml", result_folder + "train_DualMark.yaml")
     writer = SummaryWriter('runs/'+ project_name + time.strftime("%_Y_%m_%d__%H_%M_%S", time.localtime()))
 
-    network = Network(message_length, noise_layers_R, noise_layers_F, device, batch_size, lr, beta1, attention_encoder, attention_decoder, weight)
+    #network = Network(message_length, noise_layers_R, noise_layers_F, device, batch_size, lr, beta1, attention_encoder, attention_decoder, weight)
+    network = Network(message_length, noise_layers_G, noise_layers_A, device, batch_size, lr, beta1, attention_encoder, attention_decoder, weight)
 
     train_dataset = attrsImgDataset(os.path.join(dataset_path, "train_" + str(image_size)), image_size, "celebahq")
     #train_dataset = maskImgDataset(os.path.join(dataset_path, "train_" + str(image_size)), image_size)
