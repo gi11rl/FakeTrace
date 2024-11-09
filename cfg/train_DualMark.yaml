@@ -1,5 +1,5 @@
 project_name: Dual_watermark
-epoch_number: 100
+epoch_number: 3
 batch_size: 16
 lr: 0.0002
 beta1: 0.5

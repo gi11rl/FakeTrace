@@ -138,9 +138,9 @@ class Network:
 
 
 	def validation(self, images: torch.Tensor, messages: torch.Tensor, masks: torch.Tensor):
-		self.encoder_decoder.eval()
-		self.encoder_decoder.module.noise.train()
-		self.discriminator.eval()
+		self.encoder_decoder.eval()						# 평가 모드로
+		self.encoder_decoder.module.noise.train()			
+		self.discriminator.eval()						# 평가 모드로
 
 		with torch.no_grad():
 			# use device to compute
