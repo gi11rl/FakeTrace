@@ -160,7 +160,8 @@ def main():
             image = image.to(device)
             message = torch.Tensor(np.random.choice([-message_range, message_range], (image.shape[0], message_length))).to(device)
 
-            result, (images, encoded_images, noised_images) = network.validation(image, message, mask)
+            #result, (images, encoded_images, noised_images) = network.validation(image, message, mask)
+            result, (images, encoded_images, noised_images_G, noised_images_A) = network.validation(image, message, mask)
 
             print('Epoch: {}/{} Step: {}/{}'.format(epoch, epoch_number, step, len(val_dataloader)))
             for key in result:
@@ -170,9 +171,12 @@ def main():
 
             if step in saved_iterations:
                 if saved_all is None:
-                    saved_all = get_random_images(image, encoded_images, noised_images)
+                    #saved_all = get_random_images(image, encoded_images, noised_images)
+                    saved_all = get_random_images(image, encoded_images, noised_images_G, noised_images_A)
                 else:
-                    saved_all = concatenate_images(saved_all, image, encoded_images, noised_images)
+                    #saved_all = concatenate_images(saved_all, image, encoded_images, noised_images)
+                    saved_all = concatenate_images(saved_all, image, encoded_images, noised_images_G, noised_images_A)
+
 
         save_images(saved_all, epoch, result_folder + "images/", resize_to=None)
 

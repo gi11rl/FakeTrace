@@ -54,7 +54,7 @@ class Network:
 			# use device to compute
 			images, messages, masks = images.to(self.device), messages.to(self.device), masks.to(self.device)
 			#encoded_images, noised_images, decoded_messages_C, decoded_messages_R, decoded_messages_F = self.encoder_decoder(images, messages, masks)
-			encoded_images, noised_images, decoded_messages_G, decoded_messages_A = self.encoder_decoder(images, messages, masks)
+			encoded_images, noised_images_G, noised_images_A, decoded_messages_G, decoded_messages_A = self.encoder_decoder(images, messages, masks)
 
 			'''
 			train discriminator
@@ -105,9 +105,7 @@ class Network:
 			#g_loss_on_decoder_F = self.criterion_MSE(decoded_messages_F, torch.zeros_like(messages))
 			g_loss_on_decoder_G = self.criterion_MSE(decoded_messages_G, messages)
 			g_loss_on_decoder_A = self.criterion_MSE(decoded_messages_A, messages)
-   
-			######### -------- 2024 11 09 ---------- ###########
-   
+
 			# full loss
 			#g_loss = self.discriminator_weight * g_loss_on_discriminator + self.encoder_weight * g_loss_on_encoder_MSE +\
 			#		 self.decoder_weight_C * g_loss_on_decoder_C + self.decoder_weight_R * g_loss_on_decoder_R + self.decoder_weight_F * g_loss_on_decoder_F
@@ -165,7 +163,7 @@ class Network:
 			# use device to compute
 			images, messages, masks = images.to(self.device), messages.to(self.device), masks.to(self.device)
 			#encoded_images, noised_images, decoded_messages_C, decoded_messages_R, decoded_messages_F = self.encoder_decoder(images, messages, masks)
-			encoded_images, noised_images, decoded_messages_G, decoded_messages_A = self.encoder_decoder(images, messages, masks)
+			encoded_images, noised_images_G, noised_images_A, decoded_messages_G, decoded_messages_A = self.encoder_decoder(images, messages, masks)
 
 			'''
 			validate discriminator
@@ -249,7 +247,8 @@ class Network:
 			"d_loss": d_loss
 		}
 
-		return result, (images, encoded_images, noised_images)
+		#return result, (images, encoded_images, noised_images)
+		return result, (images, encoded_images, noised_images_G, noised_images_A)
 
 	def decoded_message_error_rate(self, message, decoded_message):
 		length = message.shape[0]

@@ -15,24 +15,33 @@ from PIL import Image
 
 
 def save_images(saved_all, epoch, folder, resize_to=None):
-	original_images, watermarked_images, noised_images = saved_all
+	original_images, watermarked_images, noised_images_G, noised_images_A = saved_all
 
 	images = original_images[:original_images.shape[0], :, :, :].cpu()
 	watermarked_images = watermarked_images[:watermarked_images.shape[0], :, :, :].cpu()
-	noised_images = noised_images[:noised_images.shape[0], :, :, :].cpu()
+	#noised_images = noised_images[:noised_images.shape[0], :, :, :].cpu()
+	noised_images_G = noised_images[:noised_images_G.shape[0], :, :, :].cpu()
+	noised_images_A = noised_images[:noised_images_A.shape[0], :, :, :].cpu()
 
 	# scale values to range [0, 1] from original range of [-1, 1]
 	images = (images + 1) / 2
 	watermarked_images = (watermarked_images + 1) / 2
-	noised_images = (noised_images + 1) / 2
+	#noised_images = (noised_images + 1) / 2
+	noised_images_G = (noised_images_G + 1) / 2
+	noised_images_A = (noised_images_A + 1) / 2
+
 	diff_w2co = _normalize(torch.abs(images - watermarked_images))
-	diff_w2no = _normalize(torch.abs(noised_images - watermarked_images))
+	#diff_w2no = _normalize(torch.abs(noised_images - watermarked_images))
+	diff_wg2no = _normalize(torch.abs(noised_images_G - watermarked_images))
+	diff_wa2no = _normalize(torch.abs(noised_images_A - watermarked_images))
 
 	if resize_to is not None:
 		images = F.interpolate(images, size=resize_to)
 		watermarked_images = F.interpolate(watermarked_images, size=resize_to)
 		diff_w2co = F.interpolate(diff_w2co, size=resize_to)
-		diff_w2no = F.interpolate(diff_w2no, size=resize_to)
+		#diff_w2no = F.interpolate(diff_w2no, size=resize_to)
+		diff_wg2no = F.interpolate(diff_wg2no, size=resize_to)
+		diff_wa2no = F.interpolate(diff_wa2no, size=resize_to)
 
 	'''diff_images = (watermarked_images - images + 1) / 2
 
@@ -51,9 +60,12 @@ def save_images(saved_all, epoch, folder, resize_to=None):
 		diff_images_linear[id] = (diff_images_linear[id] - diff_images_linear[id].min()) / (
 				diff_images_linear[id].max() - diff_images_linear[id].min())'''
 
+#	stacked_images = torch.cat(
+#		[images.unsqueeze(0), watermarked_images.unsqueeze(0), noised_images.unsqueeze(0), diff_w2co.unsqueeze(0),
+#		 diff_w2no.unsqueeze(0)], dim=0)
 	stacked_images = torch.cat(
-		[images.unsqueeze(0), watermarked_images.unsqueeze(0), noised_images.unsqueeze(0), diff_w2co.unsqueeze(0),
-		 diff_w2no.unsqueeze(0)], dim=0)
+		[images.unsqueeze(0), watermarked_images.unsqueeze(0), noised_images_G.unsqueeze(0), noised_images_A.unsqueeze(0),
+   		 diff_w2co.unsqueeze(0), diff_wg2no.unsqueeze(0), diff_wa2no.unsqueeze(0)], dim=0)
 	shape = stacked_images.shape
 	stacked_images = stacked_images.permute(0, 3, 1, 4, 2).reshape(shape[3] * shape[0], shape[4] * shape[1], shape[2])
 	# Add 0.5 after unnormalizing to [0, 255] to round to nearest integer
@@ -64,21 +76,29 @@ def save_images(saved_all, epoch, folder, resize_to=None):
 	saved_image.save(filename)
 
 
-def get_random_images(images, encoded_images, noised_images):
+#def get_random_images(images, encoded_images, noised_images):
+def get_random_images(images, encoded_images, noised_images_G, noised_images_A):
 	selected_id = np.random.randint(1, images.shape[0]) if images.shape[0] > 1 else 1
 	image = images.cpu()[selected_id - 1:selected_id, :, :, :]
 	encoded_image = encoded_images.cpu()[selected_id - 1:selected_id, :, :, :]
-	noised_image = noised_images.cpu()[selected_id - 1:selected_id, :, :, :]
-	return [image, encoded_image, noised_image]
+	#noised_image = noised_images.cpu()[selected_id - 1:selected_id, :, :, :]
+	noised_image_G = noised_images_G.cpu()[selected_id - 1:selected_id, :, :, :]
+	noised_image_A = noised_images_A.cpu()[selected_id - 1:selected_id, :, :, :]
+	return [image, encoded_image, noised_image_G, noised_image_A]
 
 
-def concatenate_images(saved_all, images, encoded_images, noised_images):
-	saved = get_random_images(images, encoded_images, noised_images)
-	if saved_all[2].shape[2] != saved[2].shape[2]:
+#def concatenate_images(saved_all, images, encoded_images, noised_images):
+def concatenate_images(saved_all, images, encoded_images, noised_images_G, noised_images_A):
+	#saved = get_random_images(images, encoded_images, noised_images)
+	saved = get_random_images(images, encoded_images, noised_images_G, noised_images_A)
+	#if saved_all[2].shape[2] != saved[2].shape[2]:
+	#	return saved_all
+	if saved_all[3].shape[2] != saved[3].shape[2]:
 		return saved_all
 	saved_all[0] = torch.cat((saved_all[0], saved[0]), 0)
 	saved_all[1] = torch.cat((saved_all[1], saved[1]), 0)
 	saved_all[2] = torch.cat((saved_all[2], saved[2]), 0)
+	saved_all[3] = torch.cat((saved_all[3], saved[3]), 0)		# 추가
 	return saved_all
 
 
