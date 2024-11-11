@@ -28,7 +28,7 @@ class Network:
 		# network
 		#self.encoder_decoder = DW_EncoderDecoder(message_length, noise_layers_R, noise_layers_F, attention_encoder, attention_decoder).to(device)
 		self.encoder_decoder = DW_EncoderDecoder(message_length, noise_layers_G, noise_layers_A, attention_encoder, attention_decoder).to(device)		
-  		self.discriminator = Patch_Discriminator().to(device)
+		self.discriminator = Patch_Discriminator().to(device)
 
 		self.encoder_decoder = torch.nn.DataParallel(self.encoder_decoder)
 		self.discriminator = torch.nn.DataParallel(self.discriminator)
@@ -109,9 +109,12 @@ class Network:
 			######### -------- 2024 11 09 ---------- ###########
    
 			# full loss
-			g_loss = self.discriminator_weight * g_loss_on_discriminator + self.encoder_weight * g_loss_on_encoder_MSE +\
-					 self.decoder_weight_C * g_loss_on_decoder_C + self.decoder_weight_R * g_loss_on_decoder_R + self.decoder_weight_F * g_loss_on_decoder_F
+			#g_loss = self.discriminator_weight * g_loss_on_discriminator + self.encoder_weight * g_loss_on_encoder_MSE +\
+			#		 self.decoder_weight_C * g_loss_on_decoder_C + self.decoder_weight_R * g_loss_on_decoder_R + self.decoder_weight_F * g_loss_on_decoder_F
 
+			g_loss = self.discriminator_weight * g_loss_on_discriminator + self.encoder_weight * g_loss_on_encoder_MSE +\
+					 self.decoder_weight_G * g_loss_on_decoder_G + self.decoder_weight_A * g_loss_on_decoder_A
+			
 			g_loss.backward()
 			self.opt_encoder_decoder.step()
 
@@ -124,23 +127,30 @@ class Network:
 		'''
 		decoded message error rate /Dual
 		'''
-		error_rate_C = self.decoded_message_error_rate_batch(messages, decoded_messages_C)
-		error_rate_R = self.decoded_message_error_rate_batch(messages, decoded_messages_R)
-		error_rate_F = self.decoded_message_error_rate_batch(messages, decoded_messages_F)
+		#error_rate_C = self.decoded_message_error_rate_batch(messages, decoded_messages_C)
+		#error_rate_R = self.decoded_message_error_rate_batch(messages, decoded_messages_R)
+		#error_rate_F = self.decoded_message_error_rate_batch(messages, decoded_messages_F)
+
+		error_rate_G = self.decoded_message_error_rate_batch(messages, decoded_messages_G)
+		error_rate_A = self.decoded_message_error_rate_batch(messages, decoded_messages_A)
 
 		result = {
 			"g_loss": g_loss,
-			"error_rate_C": error_rate_C,
-			"error_rate_R": error_rate_R,
-			"error_rate_F": error_rate_F,
+			#"error_rate_C": error_rate_C,
+			#"error_rate_R": error_rate_R,
+			#"error_rate_F": error_rate_F,
+			"error_rate_G": error_rate_G,
+			"error_rate_A": error_rate_A,
 			"psnr": psnr,
 			"ssim": ssim,
 			"g_loss_on_discriminator": g_loss_on_discriminator,
 			"g_loss_on_encoder_MSE": g_loss_on_encoder_MSE,
 			"g_loss_on_encoder_LPIPS": g_loss_on_encoder_LPIPS,
-			"g_loss_on_decoder_C": g_loss_on_decoder_C,
-			"g_loss_on_decoder_R": g_loss_on_decoder_R,
-			"g_loss_on_decoder_F": g_loss_on_decoder_F,
+			#"g_loss_on_decoder_C": g_loss_on_decoder_C,
+			#"g_loss_on_decoder_R": g_loss_on_decoder_R,
+			#"g_loss_on_decoder_F": g_loss_on_decoder_F,
+			"g_loss_on_decoder_G": g_loss_on_decoder_G,
+			"g_loss_on_decoder_A": g_loss_on_decoder_A,
 			"d_loss": d_loss
 		}
 		return result
@@ -154,7 +164,8 @@ class Network:
 		with torch.no_grad():
 			# use device to compute
 			images, messages, masks = images.to(self.device), messages.to(self.device), masks.to(self.device)
-			encoded_images, noised_images, decoded_messages_C, decoded_messages_R, decoded_messages_F = self.encoder_decoder(images, messages, masks)
+			#encoded_images, noised_images, decoded_messages_C, decoded_messages_R, decoded_messages_F = self.encoder_decoder(images, messages, masks)
+			encoded_images, noised_images, decoded_messages_G, decoded_messages_A = self.encoder_decoder(images, messages, masks)
 
 			'''
 			validate discriminator
@@ -185,15 +196,20 @@ class Network:
 			g_loss_on_encoder_LPIPS = torch.mean(self.criterion_LPIPS(encoded_images, images))
 
 			# RESULT : the decoded message should be similar to the raw message /Dual
-			g_loss_on_decoder_C = self.criterion_MSE(decoded_messages_C, messages)
-			g_loss_on_decoder_R = self.criterion_MSE(decoded_messages_R, messages)
-			g_loss_on_decoder_F = self.criterion_MSE(decoded_messages_F, torch.zeros_like(messages))
+			#g_loss_on_decoder_C = self.criterion_MSE(decoded_messages_C, messages)
+			#g_loss_on_decoder_R = self.criterion_MSE(decoded_messages_R, messages)
+			#g_loss_on_decoder_F = self.criterion_MSE(decoded_messages_F, torch.zeros_like(messages))
+			g_loss_on_decoder_G = self.criterion_MSE(decoded_messages_G, messages)
+			g_loss_on_decoder_A = self.criterion_MSE(decoded_messages_A, messages)
 
 			# full loss
 			# unstable g_loss_on_discriminator is not used during validation
 
+			#g_loss = 0 * g_loss_on_discriminator + self.encoder_weight * g_loss_on_encoder_LPIPS +\
+			#		 self.decoder_weight_C * g_loss_on_decoder_C + self.decoder_weight_R * g_loss_on_decoder_R + self.decoder_weight_F * g_loss_on_decoder_F
+
 			g_loss = 0 * g_loss_on_discriminator + self.encoder_weight * g_loss_on_encoder_LPIPS +\
-					 self.decoder_weight_C * g_loss_on_decoder_C + self.decoder_weight_R * g_loss_on_decoder_R + self.decoder_weight_F * g_loss_on_decoder_F
+					 self.decoder_weight_G * g_loss_on_decoder_G + self.decoder_weight_A * g_loss_on_decoder_A
 
 
 			# psnr
@@ -205,23 +221,31 @@ class Network:
 		'''
 		decoded message error rate /Dual
 		'''
-		error_rate_C = self.decoded_message_error_rate_batch(messages, decoded_messages_C)
-		error_rate_R = self.decoded_message_error_rate_batch(messages, decoded_messages_R)
-		error_rate_F = self.decoded_message_error_rate_batch(messages, decoded_messages_F)
+		#error_rate_C = self.decoded_message_error_rate_batch(messages, decoded_messages_C)
+		#error_rate_R = self.decoded_message_error_rate_batch(messages, decoded_messages_R)
+		#error_rate_F = self.decoded_message_error_rate_batch(messages, decoded_messages_F)
+		error_rate_G = self.decoded_message_error_rate_batch(messages, decoded_messages_G)
+		error_rate_A = self.decoded_message_error_rate_batch(messages, decoded_messages_A)
 
 		result = {
 			"g_loss": g_loss,
-			"error_rate_C": error_rate_C,
-			"error_rate_R": error_rate_R,
-			"error_rate_F": error_rate_F,
+			#"error_rate_C": error_rate_C,
+			#"error_rate_R": error_rate_R,
+			#"error_rate_F": error_rate_F,
+            "error_rate_G": error_rate_G,
+			"error_rate_A": error_rate_A,
+   
 			"psnr": psnr,
 			"ssim": ssim,
 			"g_loss_on_discriminator": g_loss_on_discriminator,
 			"g_loss_on_encoder_MSE": g_loss_on_encoder_MSE,
 			"g_loss_on_encoder_LPIPS": g_loss_on_encoder_LPIPS,
-			"g_loss_on_decoder_C": g_loss_on_decoder_C,
-			"g_loss_on_decoder_R": g_loss_on_decoder_R,
-			"g_loss_on_decoder_F": g_loss_on_decoder_F,
+			#"g_loss_on_decoder_C": g_loss_on_decoder_C,
+			#"g_loss_on_decoder_R": g_loss_on_decoder_R,
+			#"g_loss_on_decoder_F": g_loss_on_decoder_F,
+			"g_loss_on_decoder_G": g_loss_on_decoder_G,
+			"g_loss_on_decoder_A": g_loss_on_decoder_A,
+   
 			"d_loss": d_loss
 		}
 
