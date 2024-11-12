@@ -4,13 +4,16 @@ from .noise_layers import *
 
 class Random_Noise(nn.Module):
 
-    def __init__(self, layers, len_layers_R, len_layers_F):
+    #def __init__(self, layers, len_layers_R, len_layers_F):
+    def __init__(self, layers, len_layers_G, len_layers_A):
         super(Random_Noise, self).__init__()
         for i in range(len(layers)):
             layers[i] = eval(layers[i])
         self.noise = nn.Sequential(*layers)
-        self.len_layers_R = len_layers_R
-        self.len_layers_F = len_layers_F
+        #self.len_layers_R = len_layers_R
+        #self.len_layers_F = len_layers_F
+        self.len_layers_G = len_layers_G
+        self.len_layers_A = len_layers_A
         print(self.noise)
         self.transform = transforms.Compose([
             transforms.ToTensor(),

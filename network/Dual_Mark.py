@@ -27,7 +27,7 @@ class Network:
 
 		# network
 		#self.encoder_decoder = DW_EncoderDecoder(message_length, noise_layers_R, noise_layers_F, attention_encoder, attention_decoder).to(device)
-		# 11 / 11 DW_EncoderDecoder changed
+		##################  11 / 11 DW_EncoderDecoder changed  ###########################
   		self.encoder_decoder = DW_EncoderDecoder(message_length, noise_layers_G, noise_layers_A, attention_encoder, attention_decoder).to(device)		
 		self.discriminator = Patch_Discriminator().to(device)
 
