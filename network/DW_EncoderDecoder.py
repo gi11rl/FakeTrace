@@ -16,7 +16,6 @@ class DW_EncoderDecoder(nn.Module):
 		super(DW_EncoderDecoder, self).__init__()
 		self.encoder = DW_Encoder(message_length, attention = attention_encoder)
 		#self.noise = Random_Noise(noise_layers_R + noise_layers_F, len(noise_layers_R), len(noise_layers_F))
-		################## 11 / 12 change needed ######################
 		self.noise = Random_Noise(noise_layers_G + noise_layers_A, len(noise_layers_G), len(noise_layers_A))
 
 		#self.decoder_C = DW_Decoder(message_length, attention = attention_decoder)
