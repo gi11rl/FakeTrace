@@ -25,17 +25,25 @@ class Random_Noise(nn.Module):
         forward_image = image.clone().detach()
         forward_cover_image = cover_image.clone().detach()
         forward_mask = mask.clone().detach()
-        noised_image_C = torch.zeros_like(forward_image)
-        noised_image_R = torch.zeros_like(forward_image)
-        noised_image_F = torch.zeros_like(forward_image)
+        #noised_image_C = torch.zeros_like(forward_image)
+        #noised_image_R = torch.zeros_like(forward_image)
+        #noised_image_F = torch.zeros_like(forward_image)
+        noised_image_G = torch.zeros_like(forward_image)
+        noised_image_A = torch.zeros_like(forward_image)
+        
 
         for index in range(forward_image.shape[0]):
-            random_noise_layer_C = np.random.choice(self.noise, 1)[0]
-            random_noise_layer_R = np.random.choice(self.noise[0:self.len_layers_R], 1)[0]
-            random_noise_layer_F = np.random.choice(self.noise[self.len_layers_R:self.len_layers_R + self.len_layers_F], 1)[0]
-            noised_image_C[index] = random_noise_layer_C([forward_image[index].clone().unsqueeze(0), forward_cover_image[index].clone().unsqueeze(0), forward_mask[index].clone().unsqueeze(0)])
-            noised_image_R[index] = random_noise_layer_R([forward_image[index].clone().unsqueeze(0), forward_cover_image[index].clone().unsqueeze(0), forward_mask[index].clone().unsqueeze(0)])
-            noised_image_F[index] = random_noise_layer_F([forward_image[index].clone().unsqueeze(0), forward_cover_image[index].clone().unsqueeze(0), forward_mask[index].clone().unsqueeze(0)])
+#            random_noise_layer_C = np.random.choice(self.noise, 1)[0]
+#            random_noise_layer_R = np.random.choice(self.noise[0:self.len_layers_R], 1)[0]
+#            random_noise_layer_F = np.random.choice(self.noise[self.len_layers_R:self.len_layers_R + self.len_layers_F], 1)[0]
+            random_noise_layer_G = np.random.choice(self.noise[0 : self.len_layers_G], 1)[0]
+            random_noise_layer_A = np.random.choice(self.noise[self.len_layers_G : self.len_layers_G + self.len_layers_A], 1)[0]            
+#            noised_image_C[index] = random_noise_layer_C([forward_image[index].clone().unsqueeze(0), forward_cover_image[index].clone().unsqueeze(0), forward_mask[index].clone().unsqueeze(0)])
+#            noised_image_R[index] = random_noise_layer_R([forward_image[index].clone().unsqueeze(0), forward_cover_image[index].clone().unsqueeze(0), forward_mask[index].clone().unsqueeze(0)])
+#            noised_image_F[index] = random_noise_layer_F([forward_image[index].clone().unsqueeze(0), forward_cover_image[index].clone().unsqueeze(0), forward_mask[index].clone().unsqueeze(0)])
+            noised_image_G[index] = random_noise_layer_G([forward_image[index].clone().unsqueeze(0), forward_cover_image[index].clone().unsqueeze(0), forward_mask[index].clone().unsqueeze(0)])
+            noised_image_A[index] = random_noise_layer_A([forward_image[index].clone().unsqueeze(0), forward_cover_image[index].clone().unsqueeze(0), forward_mask[index].clone().unsqueeze(0)])                    
+
 
             '''single_image = ((noised_image_C[index].clamp(-1, 1).permute(1, 2, 0) + 1) / 2 * 255).add(0.5).clamp(0, 255).to('cpu', torch.uint8).numpy()
             im = Image.fromarray(single_image)
@@ -55,8 +63,11 @@ class Random_Noise(nn.Module):
         noised_image_gap_C = noised_image_C - forward_image
         noised_image_gap_R = noised_image_R - forward_image
         noised_image_gap_F = noised_image_F - forward_image'''
-        noised_image_gap_C = noised_image_C.clamp(-1, 1) - forward_image
-        noised_image_gap_R = noised_image_R.clamp(-1, 1) - forward_image
-        noised_image_gap_F = noised_image_F.clamp(-1, 1) - forward_image
-
-        return image + noised_image_gap_C, image + noised_image_gap_R, image + noised_image_gap_F
+#        noised_image_gap_C = noised_image_C.clamp(-1, 1) - forward_image
+#        noised_image_gap_R = noised_image_R.clamp(-1, 1) - forward_image
+#        noised_image_gap_F = noised_image_F.clamp(-1, 1) - forward_image
+        noised_image_gap_G = noised_image_G.clamp(-1, 1) - forward_image
+        noised_image_gap_A = noised_image_A.clamp(-1, 1) - forward_image
+        
+        #return image + noised_image_gap_C, image + noised_image_gap_R, image + noised_image_gap_F
+        return image + noised_image_gap_G, image + noised_image_gap_A
