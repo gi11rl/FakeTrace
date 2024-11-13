@@ -64,14 +64,17 @@ def main():
     weight = args.weight
     dataset_path = args.dataset_path
     save_images_number = args.save_images_number
-    noise_layers_R = args.noise_layers.pool_R
-    noise_layers_F = args.noise_layers.pool_F
+    #noise_layers_R = args.noise_layers.pool_R
+    #noise_layers_F = args.noise_layers.pool_F
+    noise_layers_G = args.noise_layers.pool_G
+    noise_layers_A = args.noise_layers.pool_A
 
     test_log = result_folder + "test_log" + time.strftime("%_Y_%m_%d__%H_%M_%S", time.localtime()) + ".txt"
     copyfile("cfg/test_DualMark.yaml", result_folder + "test_DualMark" + time.strftime("_%Y_%m_%d__%H_%M_%S", time.localtime()) + ".yaml")
     writer = SummaryWriter('runs/' + result_folder + noise_layer + time.strftime("%_Y_%m_%d__%H_%M_%S", time.localtime()))
 
-    network = Network(message_length, noise_layers_R, noise_layers_F, device, batch_size, lr, beta1, attention_encoder, attention_decoder, weight)
+    #network = Network(message_length, noise_layers_R, noise_layers_F, device, batch_size, lr, beta1, attention_encoder, attention_decoder, weight)
+    network = Network(message_length, noise_layers_G, noise_layers_A, device, batch_size, lr, beta1, attention_encoder, attention_decoder, weight)
     EC_path = result_folder + "models/EC_" + str(model_epoch) + ".pth"
     network.load_model_ed(EC_path)
 
@@ -90,8 +93,10 @@ def main():
     print("\nStart Testing : \n\n")
 
     test_result = {
-        "error_rate_C": 0.0,
-        "error_rate_RF": 0.0,
+        #"error_rate_C": 0.0,
+        #"error_rate_RF": 0.0,
+        "error_rate_G": 0.0,
+        "error_rate_A": 0.0,
         "psnr": 0.0,
         "ssim": 0.0,
         "lpips": 0.0
@@ -165,18 +170,24 @@ def main():
                 noised_images[index] = transform(read).unsqueeze(0).to(image.device)
             ##################################################################
 
-            decoded_messages_C = network.encoder_decoder.module.decoder_C(noised_images)
-            decoded_messages_RF = network.encoder_decoder.module.decoder_RF(noised_images)
+            #decoded_messages_C = network.encoder_decoder.module.decoder_C(noised_images)
+            #decoded_messages_RF = network.encoder_decoder.module.decoder_RF(noised_images)
+            decoded_messages_G = network.encoder_decoder.module.decoder_G(noised_images)
+            decoded_messages_A = network.encoder_decoder.module.decoder_A(noised_images)
 
         '''
 		decoded message error rate
 		'''
-        error_rate_C = network.decoded_message_error_rate_batch(messages, decoded_messages_C)
-        error_rate_RF = network.decoded_message_error_rate_batch(messages, decoded_messages_RF)
+        #error_rate_C = network.decoded_message_error_rate_batch(messages, decoded_messages_C)
+        #error_rate_RF = network.decoded_message_error_rate_batch(messages, decoded_messages_RF)
+        error_rate_G = network.decoded_message_error_rate_batch(messages, decoded_messages_G)
+        error_rate_A = network.decoded_message_error_rate_batch(messages, decoded_messages_A)
 
         result = {
-            "error_rate_C": error_rate_C,
-            "error_rate_RF": error_rate_RF,
+            #"error_rate_C": error_rate_C,
+            #"error_rate_RF": error_rate_RF,
+            "error_rate_G": error_rate_G,
+            "error_rate_A": error_rate_A,
             "psnr": psnr,
             "ssim": ssim,
             "lpips": lpips
