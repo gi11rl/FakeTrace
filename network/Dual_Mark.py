@@ -36,7 +36,6 @@ class Network:
 		# mark "cover" as 1, "encoded" as -1
 		self.label_cover = 1.0
 		self.label_encoded = - 1.0
-			###### 11/ 12 여기 보는 중 ######
 		for p in self.encoder_decoder.module.noise.parameters():
 			p.requires_grad = False
 
