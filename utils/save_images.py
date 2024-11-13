@@ -20,8 +20,8 @@ def save_images(saved_all, epoch, folder, resize_to=None):
 	images = original_images[:original_images.shape[0], :, :, :].cpu()
 	watermarked_images = watermarked_images[:watermarked_images.shape[0], :, :, :].cpu()
 	#noised_images = noised_images[:noised_images.shape[0], :, :, :].cpu()
-	noised_images_G = noised_images[:noised_images_G.shape[0], :, :, :].cpu()
-	noised_images_A = noised_images[:noised_images_A.shape[0], :, :, :].cpu()
+	noised_images_G = noised_images_G[:noised_images_G.shape[0], :, :, :].cpu()
+	noised_images_A = noised_images_A[:noised_images_A.shape[0], :, :, :].cpu()
 
 	# scale values to range [0, 1] from original range of [-1, 1]
 	images = (images + 1) / 2
