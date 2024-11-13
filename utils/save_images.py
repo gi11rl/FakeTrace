@@ -88,7 +88,7 @@ def get_random_images(images, encoded_images, noised_images_G, noised_images_A):
 
 
 #def concatenate_images(saved_all, images, encoded_images, noised_images):
-def concatenate_images(saved_all, images, encoded_images, noised_images_G, noised_images_A):
+def concatenate_images(saved_all, images, encoded_images, noised_images_G, noised_images_A=None):    
 	#saved = get_random_images(images, encoded_images, noised_images)
 	saved = get_random_images(images, encoded_images, noised_images_G, noised_images_A)
 	#if saved_all[2].shape[2] != saved[2].shape[2]:
@@ -100,6 +100,7 @@ def concatenate_images(saved_all, images, encoded_images, noised_images_G, noise
 	saved_all[2] = torch.cat((saved_all[2], saved[2]), 0)
 	saved_all[3] = torch.cat((saved_all[3], saved[3]), 0)		# 추가
 	return saved_all
+
 
 
 def _normalize(input_tensor):

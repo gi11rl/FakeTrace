@@ -54,6 +54,7 @@ def main():
 
     with open(result_folder + '/train_DualMark.yaml', 'r') as f:
         args = EasyDict(yaml.load(f, Loader=yaml.SafeLoader))
+
     lr = args.lr
     beta1 = args.beta1
     image_size = args.image_size
@@ -199,9 +200,9 @@ def main():
 
         if step in saved_iterations:
             if saved_all is None:
-                saved_all = get_random_images(image, encoded_images, noised_images)
+                saved_all = get_random_images_test(image, encoded_images, noised_images)
             else:
-                saved_all = concatenate_images(saved_all, image, encoded_images, noised_images)
+                saved_all = concatenate_images_test(saved_all, image, encoded_images, noised_images)
 
         '''
 		test results
@@ -230,7 +231,7 @@ def main():
         file.write(content)
 
     print(content)
-    save_images(saved_all, "test", result_folder + "images/", resize_to=None)
+    save_images_test(saved_all, "test", result_folder + "images/", resize_to=None)
 
     writer.close()
 

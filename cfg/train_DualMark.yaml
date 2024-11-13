@@ -1,5 +1,5 @@
 project_name: FakeTrace
-epoch_number: 3
+epoch_number: 30
 batch_size: 16
 lr: 0.0002
 beta1: 0.5

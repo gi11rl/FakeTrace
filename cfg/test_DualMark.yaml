@@ -1,7 +1,7 @@
 #result_folder: Dual_watermark_256_128_0.1_0.0002_0.5_se_se_1_10_10_10_0.1_2023_04_18_16_29_54/
-result_folder: Dual_watermark_256_128_0.1_0.0002_0.5_se_se_1_10_10_10_0.1_2024_11_09_11_10_25/
+result_folder: FakeTrace_256_128_0.1_0.0002_0.5_se_se_1_10_10_0.1_2024_11_13_16_39_12/
 #model_epoch: 90
-model_epoch: 3
+model_epoch: 30
 batch_size: 1
 with_mask: true
 strength_factor: 1
