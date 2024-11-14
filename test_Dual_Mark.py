@@ -175,6 +175,11 @@ def main():
             #decoded_messages_RF = network.encoder_decoder.module.decoder_RF(noised_images)
             decoded_messages_G = network.encoder_decoder.module.decoder_G(noised_images)
             decoded_messages_A = network.encoder_decoder.module.decoder_A(noised_images)
+            
+            clamped_decoded_messages_G = np.where(decoded_messages_G.cpu().numpy() > 0, 0.1, -0.1)
+            
+            print("Original Watermark : ", messages.cpu().numpy())      # 추가
+            print(" Decoded message   : ", clamped_decoded_messages_G)    # 추가
 
         '''
 		decoded message error rate
