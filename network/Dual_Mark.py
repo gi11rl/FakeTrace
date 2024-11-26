@@ -40,8 +40,7 @@ class Network:
 			p.requires_grad = False
 
 		# optimizer
-		self.opt_encoder_decoder = torch.optim.Adam(
-			filter(lambda p: p.requires_grad, self.encoder_decoder.parameters()), lr=lr, betas=(beta1, 0.999))
+		self.opt_encoder_decoder = torch.optim.Adam(filter(lambda p: p.requires_grad, self.encoder_decoder.parameters()), lr=lr, betas=(beta1, 0.999))
 		self.opt_discriminator = torch.optim.Adam(self.discriminator.parameters(), lr=lr, betas=(beta1, 0.999))
 
 
@@ -150,7 +149,7 @@ class Network:
 			"g_loss_on_decoder_A": g_loss_on_decoder_A,
 			"d_loss": d_loss
 		}
-		return result
+		return result, (images, encoded_images, noised_images_G, noised_images_A)
 
 
 	def validation(self, images: torch.Tensor, messages: torch.Tensor, masks: torch.Tensor):

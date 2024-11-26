@@ -96,6 +96,9 @@ def main():
         }
 
         start_time = time.time()
+        
+        saved_iterations = np.random.choice(np.arange(1, len(val_dataloader)+1), size=save_images_number, replace=False)
+        saved_all = None
 
         '''
         train
@@ -105,7 +108,7 @@ def main():
             image = image.to(device)
             message = torch.Tensor(np.random.choice([-message_range, message_range], (image.shape[0], message_length))).to(device)
 
-            result = network.train(image, message, mask)
+            result, (images, encoded_images, noised_images_G, noised_images_A) = network.train(image, message, mask)
 
             print('Epoch: {}/{} Step: {}/{}'.format(epoch, epoch_number, step, len(train_dataloader)))
 
@@ -113,6 +116,14 @@ def main():
                 print(key, float(result[key]))
                 writer.add_scalar("Train/" + key, float(result[key]), (epoch - 1) * len(train_dataloader) + step)
                 running_result[key] += float(result[key])
+                
+            if step in saved_iterations:
+                if saved_all is None:
+                    saved_all = get_random_images(image, encoded_images, noised_images_G, noised_images_A)
+                else:
+                    saved_all = concatenate_images(saved_all, image, encoded_images, noised_images_G, noised_images_A)
+
+        save_images(saved_all, epoch, result_folder + "images/", resize_to=None)
 
         '''
         train results
@@ -128,7 +139,9 @@ def main():
         print(content)
 
         '''
-        validation
+
+        '''
+        #validation
         '''
 
         val_result = {
@@ -181,7 +194,7 @@ def main():
         save_images(saved_all, epoch, result_folder + "images/", resize_to=None)
 
         '''
-        validation results
+        #validation results
         '''
         content = "Epoch " + str(epoch) + " : " + str(int(time.time() - start_time)) + "\n"
         for key in val_result:
@@ -192,6 +205,8 @@ def main():
         with open(result_folder + "/val_log.txt", "a") as file:
             file.write(content)
         print(content)
+        '''
+
 
         '''
         save model
