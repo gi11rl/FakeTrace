@@ -30,18 +30,18 @@ def save_images(saved_all, epoch, folder, resize_to=None):
 	noised_images_G = (noised_images_G + 1) / 2
 	noised_images_A = (noised_images_A + 1) / 2
 
-	diff_w2co = _normalize(torch.abs(images - watermarked_images))
-	#diff_w2no = _normalize(torch.abs(noised_images - watermarked_images))
-	diff_wg2no = _normalize(torch.abs(noised_images_G - watermarked_images))
-	diff_wa2no = _normalize(torch.abs(noised_images_A - watermarked_images))
+	#diff_w2co = _normalize(torch.abs(images - watermarked_images))
+	####diff_w2no = _normalize(torch.abs(noised_images - watermarked_images))
+	#diff_wg2no = _normalize(torch.abs(noised_images_G - watermarked_images))
+	#diff_wa2no = _normalize(torch.abs(noised_images_A - watermarked_images))
 
 	if resize_to is not None:
 		images = F.interpolate(images, size=resize_to)
 		watermarked_images = F.interpolate(watermarked_images, size=resize_to)
-		diff_w2co = F.interpolate(diff_w2co, size=resize_to)
-		#diff_w2no = F.interpolate(diff_w2no, size=resize_to)
-		diff_wg2no = F.interpolate(diff_wg2no, size=resize_to)
-		diff_wa2no = F.interpolate(diff_wa2no, size=resize_to)
+		#diff_w2co = F.interpolate(diff_w2co, size=resize_to)
+		###diff_w2no = F.interpolate(diff_w2no, size=resize_to)
+		#diff_wg2no = F.interpolate(diff_wg2no, size=resize_to)
+		#diff_wa2no = F.interpolate(diff_wa2no, size=resize_to)
 
 	'''diff_images = (watermarked_images - images + 1) / 2
 
@@ -63,9 +63,12 @@ def save_images(saved_all, epoch, folder, resize_to=None):
 #	stacked_images = torch.cat(
 #		[images.unsqueeze(0), watermarked_images.unsqueeze(0), noised_images.unsqueeze(0), diff_w2co.unsqueeze(0),
 #		 diff_w2no.unsqueeze(0)], dim=0)
+	#stacked_images = torch.cat(
+	#	[images.unsqueeze(0), watermarked_images.unsqueeze(0), noised_images_G.unsqueeze(0), noised_images_A.unsqueeze(0),
+   	#	 diff_w2co.unsqueeze(0), diff_wg2no.unsqueeze(0), diff_wa2no.unsqueeze(0)], dim=0)
 	stacked_images = torch.cat(
-		[images.unsqueeze(0), watermarked_images.unsqueeze(0), noised_images_G.unsqueeze(0), noised_images_A.unsqueeze(0),
-   		 diff_w2co.unsqueeze(0), diff_wg2no.unsqueeze(0), diff_wa2no.unsqueeze(0)], dim=0)
+		[images.unsqueeze(0), watermarked_images.unsqueeze(0), noised_images_G.unsqueeze(0), noised_images_A.unsqueeze(0)], dim=0)
+ 
 	shape = stacked_images.shape
 	stacked_images = stacked_images.permute(0, 3, 1, 4, 2).reshape(shape[3] * shape[0], shape[4] * shape[1], shape[2])
 	# Add 0.5 after unnormalizing to [0, 255] to round to nearest integer
