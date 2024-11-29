@@ -22,3 +22,4 @@ from .ganimation.main import GANimation
 from .stargan.main import StarGAN
 #from .mobilefaceswap.image_test import MobileFaceSwap
 #from .roop.ROOP import ROOP
+from .inswapper_2.swapper import Inswapper
