@@ -7,6 +7,8 @@ pip install torch==1.12.1+cu116 torchvision==0.13.1+cu116 torchaudio==0.12.1+cu1
 ```
 
 ## Train
+Noise layer should be set up. Not provided in this repository. 
+
 Config : `cfg/FakeTrace_train.yaml`
 
 ```
