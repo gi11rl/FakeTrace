@@ -1,0 +1,6 @@
+result_folder: FakeTrace_final_256_128_10_10_10_10_0.1_2024_12_17_17_25_55/
+model_epoch: 11
+strength_factor: 0.5
+input_image_path: test/pm.png
+output_image_path: test/11_0.5.png
+watermark: hellowatermark?!

@@ -1,0 +1,4 @@
+result_folder: FakeTrace_final_256_128_10_10_10_10_0.1_2024_12_17_17_25_55/
+model_epoch: 11
+input_image_path: test/11_deep.png
+extracted_watermark_path: test/11_deep_dec.txt

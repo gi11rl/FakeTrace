@@ -1,0 +1,36 @@
+project_name: FakeTrace_final
+epoch_number: 100
+batch_size: 8
+lr: 0.0002
+beta1: 0.5
+image_size: 256
+message_length: 128
+message_range: 0.1
+attention_encoder: se
+attention_decoder: se
+weight:
+  - 10  # encoder
+  - 10  # decoder_G
+  - 10  # decoder_A
+  - 10  # detector
+  - 0.1 # discriminator
+dataset_path: /mnt/c/Users/bob13/fake/dataset/
+save_images_number: 8
+noise_layers:
+  pool_G:
+  #- SimSwap() 
+  - GANimation() 
+  - StarGAN() 
+  pool_A:
+  - Inswapper()
+  - MobileFaceSwap()
+
+# General
+# Identity()/JpegTest()/Resize()/GaussianBlur()/MedianBlur()/Brightness()/Contrast()/Saturation()/Hue()/FaceCrop()/FaceCropout()/Dropout()/SaltPepper()/GaussianNoise()
+# FaceErase()/FaceEraseout()/SimSwap()/FaceSwap()/GANimation()/StarGAN()/Inswapper()/Uniface()/Simswap_AE()
+
+# GAN
+# SimSwap()/GANimation()/StarGAN()
+
+# AE
+# Inswapper()/MobileFaceSwap()
